@@ -2,9 +2,6 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Graph from "react-graph-vis";
-import Dropdown from 'react-dropdown';
-import 'react-dropdown/style.css';
-
 class App extends Component {
   constructor(){
     super();
@@ -15,35 +12,16 @@ class App extends Component {
       ijkNodes: [],
       ijkEdges: [],
       nodes:[],
-      edges:[],
-      srcAndTarget:[],
-      selected: '',
-      targetSelected:'',
-      sourceSelected:''
+      edges:[]
     };
 
     this.handleIJK = this.handleIJK.bind(this);
     this.handleKMS = this.handleKMS.bind(this);
-    this.onTargetSelect = this.onTargetSelect.bind(this);
-    this.onSourceSelect = this.onSourceSelect.bind(this);
   }
 
   componentDidMount(){
   console.log("Tada");
-  fetch('http://localhost:8080/GraphyMakeGraphFace/graph/srctarget')
-  .then(response => response.json())
-  .then(result => {
-    const apts = result.map(item => {
-      return item;
-    })
-    this.setState({
-      srcAndTarget: apts.sort(),
-    })
-  });
-}
-
-handleKMS(){
-  fetch('http://localhost:8080/GraphyMakeGraphFace/graph/vertices')
+  fetch('./kmsNodes.json')
   .then(response => response.json())
   .then(result => {
     const apts = result.map(item => {
@@ -54,7 +32,7 @@ handleKMS(){
     })
   });
 
-  fetch('http://localhost:8080/GraphyMakeGraphFace/graph/edges')
+  fetch('./kmsEdges.json')
   .then(response => response.json())
   .then(result => {
     const apts = result.map(item => {
@@ -65,17 +43,7 @@ handleKMS(){
     })
   });
 
-  this.setState({
-    edges: this.state.kmsEdges,
-    nodes: this.state.kmsNodes
-  })
-}
-
-handleIJK(){
-  console.log('Source: '+ this.state.sourceSelected);
-  console.log('Target: '+ this.state.targetSelected);
-  console.log('http://localhost:8080/GraphyMakeGraphFace/graph/edges/'+this.state.sourceSelected+'/'+this.state.targetSelected);
-  fetch('http://localhost:8080/GraphyMakeGraphFace/graph/edges/'+this.state.sourceSelected+'/'+this.state.targetSelected)
+  fetch('./ijkEdges.json')
   .then(response => response.json())
   .then(result => {
     const apts = result.map(item => {
@@ -86,7 +54,7 @@ handleIJK(){
     })
   });
 
-  fetch('http://localhost:8080/GraphyMakeGraphFace/graph/vertex/'+this.state.sourceSelected+'/'+this.state.targetSelected)
+  fetch('./ijkNodes.json')
   .then(response => response.json())
   .then(result => {
     const apts = result.map(item => {
@@ -96,31 +64,26 @@ handleIJK(){
       ijkNodes: apts,
     })
   });
+}
 
+handleKMS(){
+  this.setState({
+    edges: this.state.kmsEdges,
+    nodes: this.state.kmsNodes
+  })
+}
+
+handleIJK(){
   this.setState({
     edges: this.state.ijkEdges,
     nodes: this.state.ijkNodes
   })
 }
-
-onSourceSelect (option) {
-//  console.log('Your Source ', option.label)
-  this.setState({sourceSelected: option.label})
-}
-onTargetSelect (option) {
-//  console.log('Your Target', option.label)
-  this.setState({targetSelected: option.label})
-}
-
 render() {
-  console.log("Test");
-const defaultOptionS= this.state.sourceSelected
-const defaultOptionT= this.state.targetSelected
-const placeHolderValueS = typeof this.state.sourceSelected === 'string' ? this.state.sourceSelected : this.state.sourceSelected.label
-const placeHolderValueT = typeof this.state.targetSelected === 'string' ? this.state.targetSelected : this.state.targetSelected.label
-const opt = this.state.srcAndTarget;
-
   const graph = {
+    // nodes:this.state.ijkNodes,
+    // edges:this.state.ijkEdges
+
     nodes:this.state.nodes,
     edges:this.state.edges
   };
@@ -145,11 +108,10 @@ const events = {
 };
   return (
     <div>
-      <h1 align ="center">Graph</h1>
-      <div display = "inline">
+
+      <h1 align ="center">Kruskal MST</h1>
+      <div align = "center">
       <button className ="button"  onClick={() => this.handleKMS()}>KMS</button>
-      <Dropdown options={opt} onChange={this.onSourceSelect} value={defaultOptionS} placeholder="Source" />
-      <Dropdown options={opt} onChange={this.onTargetSelect} value={defaultOptionT} placeholder="Target" />
       <button className ="button"  onClick={() => this.handleIJK()}>Shortest Path</button>
       </div>
       <Graph graph={graph} options={options} events={events} style={{ height: "1000px" }} />
