@@ -7,7 +7,7 @@
     "react-dom": "^16.8.6",
     "react-dropdown": "^1.6.4",
     "react-graph-vis": "^1.0.2",
-    "react-scripts": "3.0.0",
+    "react-scripts": "5.0.1",
     "react-widgets": "^4.4.11",
     "reactjs-graphs": "^1.4.0"
   },
